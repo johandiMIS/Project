@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 app.use('/api/user/', userRouter);
 
 app.get('/*', (req, res) => {
-    res.send('DDCUMENTATION PAGE')
+    res.send('DOCUMENTATION PAGE')
 })
 
 

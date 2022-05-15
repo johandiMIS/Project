@@ -28,7 +28,7 @@ class UserAPI{
     
     static GetUserByName = (name)=>{
         return new Promise((resolve, reject)=>{
-            pool.query(`select * from users where id = '${id}'`)
+            pool.query(`select * from users where username = '${name}'`)
             .then((data)=>{
                 resolve(data.rows)
             })
@@ -38,9 +38,9 @@ class UserAPI{
         })
     }
     
-    static GetUserByLevel = (name)=>{
+    static GetUserByLevel = (level)=>{
         return new Promise((resolve, reject)=>{
-            pool.query(`select * from users where id = '${id}'`)
+            pool.query(`select * from users where userlevel = '${level}'`)
             .then((data)=>{
                 resolve(data.rows)
             })
