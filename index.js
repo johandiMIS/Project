@@ -1,18 +1,17 @@
 const express = require('express');
+const { send } = require('express/lib/response');
+const userRouter = require('./components/users/userRoute.js').userRouter
+
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
-const {User} = require('./components/users')
+app.use('/api/user/', userRouter);
 
-app.get('/', (req, res) => {
-    User.getUsers()
-    .then((data)=>{
-        res.json(data.rows)
-    })
-    .catch((err)=>{
-        res.send(`Failed, ${err}`)
-    })
+app.get('/*', (req, res) => {
+    res.send('DDCUMENTATION PAGE')
 })
+
 
 app.listen(PORT, ()=>{
     console.log(`Server Start on Port ${PORT}`);
