@@ -1,0 +1,29 @@
+may 14th 
+ - Init node(expressJs) project
+ - test deploy to heroku
+ - create basic architecture
+ - create and connect postgresql server (tested local and server)
+
+may 15th
+ - create reusable promises for controllers and API
+ - create user api CRUD by id, username and level
+
+may 16th
+ - user api documentation
+ 
+
+
+1. Dengan NodeJS (atau Golang), agar saudara membuat Rest API CRUD User dan User Login.  
+   (DONE with project url : https://safe-taiga-38670.herokuapp.com/ )
+2. Jika menggunakan NodeJS maka disarankan menggunakan ExpressJS. Database bebas, tetapi disarankan MongoDB.(DONE using postgresql)
+3. User Login digunakan user (username, password) untuk mengakses API CRUD (token, tetapi mendapatkan nilai tambahan jika menggunakan refresh token).
+4. Bikin 2 users dengan role: 1 Admin, 1 User. 
+5. Admin bisa melakukan/mengakses semua API CRUD, sedangkan User hanya bisa mengakses data user bersangkutan saja (Read)
+6. Implementasi arstektur Microservices, menggunakan Kubernetes dengan Docker container deploy di VPS (1 node dengan beberapa pod di dalamnya). 
+   Bagi yang belum memiliki VPS, maka cukup (a) menyiapkan semua YML agar aplikasi bisa dijalankan secara containerize 
+   dan siap di deploy di Kubernetes dan (b) di-deploy di lokal dan sertakan screenshoot.
+7. Upload source code ke Github beserta script YML Kubernetes. (DONE)
+8. Bikin dokumentasi API nya (Postman atau Swagger) yang bisa diakses ke server Rest API nya. (DONE)
+9. Bikin diagram arstektur nya yang menjelaskan flow API CRUD dan Login. 
+   (DONE with reff: https://github.com/goldbergyoni/nodebestpractices/blob/master/sections/projectstructre/breakintcomponents.md)
+10. Lampirkan credential Admin di Readme. (DONE)
