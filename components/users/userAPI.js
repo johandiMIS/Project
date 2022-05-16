@@ -81,7 +81,7 @@ UserApiRouter.delete('/id/:id', (req, res)=>{
     })
 })
 
-UserApiRouter.put('/name/:name', (req, res)=>{
+UserApiRouter.delete('/name/:name', (req, res)=>{
     const name = req.params.name;
     UserAPI.DeleteUserByName(name)
     .then((data)=>{

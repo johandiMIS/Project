@@ -1,27 +1,27 @@
-get	api/user
+get		api/user
 get 	api/user/id/:id
 get 	api/user/name/:name
 get 	api/user/level/:level
 
 post 	api/user
-	Body:
-	{
-	    "username":"",
-	    "userLevel":"",
-	    "encryptedPassword":"",
-	}
+	  	Body:
+		{
+			"username":"",
+			"userLevel":"",
+			"encryptedPassword":"",
+		}
 	
 
-put	api/user/id/:id
-	api/user/name/:name
+put		api/user/id/:id
+		api/user/name/:name
 
-	Body:
-	{
-	    "username":"",
-	    "userLevel":"",
-	    "encryptedPassword":"",
-	}
+		Body:
+		{
+			"username":"",
+			"userLevel":"",
+			"encryptedPassword":"",
+		}
 
 delete	api/user/id/:id
-	api/user/name/:name	
+delete	api/user/name/:name	
 
