@@ -3,11 +3,6 @@ const jwt = require('jsonwebtoken')
 const passwordValidator = require("password-validator")
 const  pool = require('./../../tools/psql').pool
 
-
-
-
-
-
 class UserAPI{
     // HTTP GET request.
     static GetUser = ()=>{
@@ -186,6 +181,30 @@ class UserAPI{
     static UpdateAccessTokenByRefreshToken = (refreshtoken, accesstoken)=>{
         return new Promise((resolve, reject)=>{
             pool.query(`update tokens set accesstoken = '${accesstoken}' where refreshtoken = '${refreshtoken}' `)
+            .then(()=>{
+                resolve({message:"Success"})
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+
+    static DeleteTokenByUsername = (username)=>{
+        return new Promise(()=>{
+            pool.query(`delete from users where username = '${username}'`)
+            .then(()=>{
+                resolve({message:"Success"})
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+
+    static DeleteTokenByRefreshToken = (refreshtoken)=>{
+        return new Promise(()=>{
+            pool.query(`delete from users where refreshtoken = '${refreshtoken}'`)
             .then(()=>{
                 resolve({message:"Success"})
             })
@@ -466,6 +485,30 @@ class User{
                 .then(()=>{
                     resolve([`${this.refreshtoken}`,`${this.accesstoken}`])
                 })
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+
+    static LogOut = (refreshtoken)=>{
+        return new Promise((resolve, reject)=>{
+            staticFunction.DeleteTokenByRefreshToken(refreshtoken)
+            .then((data)=>{
+                resolve(data)
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+
+    static LogOutAll = (username)=>{
+        return new Promise((resolve, reject)=>{
+            staticFunction.DeleteTokenByUsername(username)
+            .then((data)=>{
+                resolve(data)
             })
             .catch((err)=>{
                 reject(err)

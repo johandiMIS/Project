@@ -1,4 +1,5 @@
 const {Router} = require('express');
+const { UserAPI } = require('./userController');
 const User = require('./userController').User
 const UserRouter = new Router();
 
@@ -42,10 +43,23 @@ UserRouter.post('/generateaccesstoken', (req, res)=>{
     })
 })
 
-UserRouter.get('/retrieve', User.UserAuth, (req, res)=>{
-    res.json({
-        username : req.mwUsername,
-        userLevel: req.mwUserlevel
+UserRouter.get('/logout', User.UserAuth, (req, res)=>{
+    User.LogOut(req.header('Authorization').replace('Bearer ',''))
+    .then((data)=>{
+        res.json(data)
+    })
+    .catch((err)=>{
+        res.json(err)
+    })
+})
+
+UserRouter.get('/logoutall', User.UserAuth, (req, res)=>{
+    User.LogOutAll(req.mwUsername)
+    .then((data)=>{
+        res.json(data)
+    })
+    .catch((err)=>{
+        res.json(err)
     })
 })
 
