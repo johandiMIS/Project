@@ -1,162 +1,10 @@
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
-const { json } = require("express/lib/response")
 const passwordValidator = require("password-validator")
-const res = require("express/lib/response")
-const { user } = require("pg/lib/defaults")
-const ConnectionParameters = require("pg/lib/connection-parameters")
 const  pool = require('./../../tools/psql').pool
 
-class staticFunction{
-    static GetHash = function(password){
-        return new Promise((resolve, reject)=>{
-            bcrypt.genSalt(10, function(err, salt) {
-                if(err){
-                    reject({
-                        result : "Error",
-                        message : `Failed Generate Salt`,
-                        description : ""
-                    })
-                }
-                else{
-                    bcrypt.hash(password, salt, function(err, hash) {
-                        if(err){
-                            reject({
-                                result : "Error",
-                                message : `Failed Encrypt Password`,
-                                description : ""
-                            })
-                        }
-                        else{
-                            resolve({
-                                result : "Success",
-                                message : `Password encrypted`,
-                                description : hash
-                            })
-                        }
-                    });
-                }
-            });
-        })
-    } 
 
-    static PasswordValidate = (password)=>{
-        var schema = new passwordValidator()
-        .is().min(8)
-        .is().max(30)
-        .has().uppercase()
-        .has().lowercase()
-        .has().digits()
-        .has().symbols()
-        .has().not().spaces();
-    
-        return new Promise((resolve, reject)=>{
-            if(schema.validate(password) === true){
-                resolve({
-                    result: "Success",
-                    message: "Password Valid",
-                    description : ""
-                })
-            }
-            else{
-                reject({
-                    result: "Error",
-                    message: "Password Format Invalid",
-                    description: schema.validate(password, {details:true}) 
-                })
-            }
-        })
-    }
 
-    static UsernameAvailable = (username)=>{
-        return new Promise((resolve, reject)=>{
-            pool.query(`select count(*) from users where username = '${username}'`)
-            .then((res)=>{
-                if(JSON.parse(res.rows[0].count) <= 0) resolve({
-                    result: "Success",
-                    message: "Username Valid",
-                    description : {
-                        name: username
-                    }
-                })
-                else{
-                    reject({
-                        result : "Error",
-                        message : `Username ${username} Already Used`,
-                        description : ""
-                    })
-                }
-            })
-            .catch((err)=>{
-                reject({
-                    result : "Error",
-                    message : `Throw Error, ${err}`,
-                    description : ""
-                })
-            })
-        })
-    }
-
-    static PasswordEncrypt = function(password){
-        return new Promise((resolve, reject)=>{
-            bcrypt.genSalt(10, function(err, salt) {
-                if(err){
-                    reject({
-                        result : "Error",
-                        message : `Failed Generate Salt`,
-                        description : ""
-                    })
-                }
-                else{
-                    bcrypt.hash(password, salt, function(err, hash) {
-                        if(err){
-                            reject({
-                                result : "Error",
-                                message : `Failed Encrypt Password`,
-                                description : ""
-                            })
-                        }
-                        else{
-                            resolve({
-                                result : "Success",
-                                message : `Password encrypted`,
-                                description : hash
-                            })
-                        }
-                    });
-                }
-            });
-        })
-    }
-
-    static GetPassword = function (username){
-        return new Promise((resolve, reject)=>{
-            pool.query(`select encryptedPassword from users where username = '${username}'`)
-            .then((data)=>{
-                if(data.rowCount <= 0){
-                    reject({
-                        result : "Error",
-                        message : `User Not Found`,
-                        description : ""
-                    })
-                }
-                return JSON.stringify(data.rows[0])
-
-            })
-            .then((data)=>{
-                resolve(data)
-            })
-            .catch((err)=>{
-                reject({
-                    result : "Error",
-                    message : `Throw Error, ${err}`,
-                    description : ""
-                })
-            })
-        })
-    }
-    
-}
 
 
 
@@ -259,7 +107,7 @@ class UserAPI{
             })
         })
     }
-
+    // HTTP DELETE request.
     static DeleteUserById = (id)=>{
         return new Promise((resolve, reject)=>{
             pool.query(`delete from users where Id = ${id}`)
@@ -283,6 +131,220 @@ class UserAPI{
             })
         })
     }
+
+    // HTTP TOKEN GET request.
+    static GetTokenByName = (name)=>{
+        return new Promise((resolve, reject)=>{
+            pool.query(`select * from tokens where username = '${name}'`)
+            .then((data)=>{
+                resolve(data)
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+
+    static GetTokenByRefreshToken = (refreshtoken)=>{
+        return new Promise((resolve, reject)=>{
+            pool.query(`select * from tokens where refreshtoken = '${refreshtoken}'`)
+            .then((data)=>{
+                resolve(data)
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+
+    static GetTokenByAccesssToken = (accesstoken)=>{
+        return new Promise((resolve, reject)=>{
+            pool.query(`select * from tokens where accesstoken = '${accesstoken}'`)
+            .then((data)=>{
+                resolve(data)
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+
+    // HTTP TOKEN POST request.
+    static CreateToken = (username,refreshtoken, accesstoken)=>{
+        return new Promise((resolve, reject)=>{
+            pool.query(`insert into tokens (username, refreshtoken, accesstoken) values ('${username}','${refreshtoken}','${accesstoken}')`)
+            .then(()=>{
+                resolve({message:"Success"})
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+
+    // HTTP TOKEN PUT request.
+    static UpdateAccessTokenByRefreshToken = (refreshtoken, accesstoken)=>{
+        return new Promise((resolve, reject)=>{
+            pool.query(`update tokens set accesstoken = '${accesstoken}' where refreshtoken = '${refreshtoken}' `)
+            .then(()=>{
+                resolve({message:"Success"})
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+}
+
+class staticFunction{
+    static GetHash = (password)=>{
+        return new Promise((resolve, reject)=>{
+            bcrypt.genSalt(10, function(err, salt) {
+                if(err){
+                    reject({
+                        result : "Error",
+                        message : `Failed Generate Salt`,
+                        description : ""
+                    })
+                }
+                else{
+                    bcrypt.hash(password, salt, function(err, hash) {
+                        if(err){
+                            reject({
+                                result : "Error",
+                                message : `Failed Encrypt Password`,
+                                description : ""
+                            })
+                        }
+                        else{
+                            resolve({
+                                result : "Success",
+                                message : `Password encrypted`,
+                                description : hash
+                            })
+                        }
+                    });
+                }
+            });
+        })
+    } 
+
+    static PasswordValidate = (password)=>{
+        var schema = new passwordValidator()
+        .is().min(8)
+        .is().max(30)
+        .has().uppercase()
+        .has().lowercase()
+        .has().digits()
+        .has().symbols()
+        .has().not().spaces();
+    
+        return new Promise((resolve, reject)=>{
+            if(schema.validate(password) === true){
+                resolve({
+                    result: "Success",
+                    message: "Password Valid",
+                    description : ""
+                })
+            }
+            else{
+                reject({
+                    result: "Error",
+                    message: "Password Format Invalid",
+                    description: schema.validate(password, {details:true}) 
+                })
+            }
+        })
+    }
+
+    static UsernameAvailable = (username)=>{
+        return new Promise((resolve, reject)=>{
+            UserAPI.GetUserByName(username)
+            .then((data)=>{
+                if(data.rowCount <= 0) resolve({
+                    result: "Success",
+                    message: "Username Valid",
+                    description : {
+                        name: username
+                    }
+                })
+                else{
+                    reject({
+                        result : "Error",
+                        message : `Username ${username} Already Used`,
+                        description : ""
+                    })
+                }
+            })
+            .catch((err)=>{
+                reject({
+                    result : "Error",
+                    message : `Throw Error, ${err}`,
+                    description : ""
+                })
+            })
+        })
+    }
+
+    static PasswordEncrypt = (password)=>{
+        return new Promise((resolve, reject)=>{
+            bcrypt.genSalt(10, function(err, salt) {
+                if(err){
+                    reject({
+                        result : "Error",
+                        message : `Failed Generate Salt`,
+                        description : ""
+                    })
+                }
+                else{
+                    bcrypt.hash(password, salt, function(err, hash) {
+                        if(err){
+                            reject({
+                                result : "Error",
+                                message : `Failed Encrypt Password`,
+                                description : ""
+                            })
+                        }
+                        else{
+                            resolve({
+                                result : "Success",
+                                message : `Password encrypted`,
+                                description : hash
+                            })
+                        }
+                    });
+                }
+            });
+        })
+    }
+
+    static GetPassword = (username)=>{
+        return new Promise((resolve, reject)=>{
+            pool.query(`select encryptedPassword from users where username = '${username}'`)
+            .then((data)=>{
+                if(data.rowCount <= 0){
+                    reject({
+                        result : "Error",
+                        message : `User Not Found`,
+                        description : ""
+                    })
+                }
+                return JSON.stringify(data.rows[0])
+
+            })
+            .then((data)=>{
+                resolve(data)
+            })
+            .catch((err)=>{
+                reject({
+                    result : "Error",
+                    message : `Throw Error, ${err}`,
+                    description : ""
+                })
+            })
+        })
+    }
+
 }
 
 class User{
@@ -343,11 +405,7 @@ class User{
                     this.refreshtoken = refreshtoken
 
                     return new Array(`${result.rows[0].id}`,`${username}`,`${result.rows[0].userlevel}`,`${refreshtoken}`)
-                })
-                .catch((err)=>{
-                    reject(err)
-                })
-                
+                })                
             })
             .then((data)=>{
                 this.id = data[0]
@@ -364,13 +422,9 @@ class User{
             })
             .then((accesstoken)=>{
                 this.accesstoken = accesstoken
-
-                pool.query(`insert into tokens (username, refreshtoken, accesstoken) values ('${this.username}','${this.refreshtoken}','${this.accesstoken}')`)
+                staticFunction.CreateToken(this.username, this.refreshtoken, this.accesstoken)
                 .then(()=>{
                     resolve([`${this.refreshtoken}`,`${this.accesstoken}`])
-                })
-                .catch((err)=>{
-                    reject(err)
                 })
             })
             .catch((err)=>{
@@ -378,11 +432,54 @@ class User{
             })
         })
     }
-}
 
+    static GenerateAccessToken = (refreshtoken)=>{
+        return new Promise( async (resolve, reject)=>{
+            UserAPI.GetTokenByRefreshToken(refreshtoken)
+            .then((data)=>{
+                if(data.rowCount <= 0) reject({
+                    result: "Error",
+                    message: "Token Not Found"
+                })
+            })
+            .then(()=>{
+                return jwt.verify(refreshtoken, process.env.JWT_WORD)
+            })
+            .then((data)=>{
+                return UserAPI.GetUserByName(data.username)
+                .then((data)=>{
+                    return data[0]
+                })
+            })
+            .then((data)=>{
+                return jwt.sign({
+                    id:data.id,
+                    username:data.username,
+                    userlevel:data.userlevel
+                },
+                process.env.JWT_WORD,
+                {expiresIn:15*60}) // 15min
+            })
+            .then((accesstoken)=>{
+                return UserAPI.UpdateAccessTokenByRefreshToken(refreshtoken, accesstoken)
+                .then(()=>{
+                    return {accesstoken:accesstoken}
+                })
+            })
+            .then((data)=>{
+                resolve(data)
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+
+    // static Auth
+}
 
 
 module.exports = {
     UserAPI,
     User
-}; 
+}
