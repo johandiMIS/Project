@@ -31,6 +31,25 @@ UserRouter.post('/login', (req, res)=>{
     })
 })
 
+UserRouter.post('/generateaccesstoken', (req, res)=>{
+    const accesstoken = req.header('Authorization').replace('Bearer ','')
+    User.GenerateAccessToken(accesstoken)
+    .then((data)=>{
+        res.json(data)
+    })
+    .catch((err)=>{
+        res.json(err)
+    })
+})
+
+UserRouter.get('/retrieve', User.UserAuth, (req, res)=>{
+    res.json({
+        username : req.mwUsername,
+        userLevel: req.mwUserlevel
+    })
+})
+
+
 module.exports = {
     UserRouter
 }

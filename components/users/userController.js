@@ -345,6 +345,46 @@ class staticFunction{
         })
     }
 
+    static Auth = (accesslevel, accesstoken)=>{
+        return new Promise((resolve, reject)=>{
+            UserAPI.GetTokenByAccesssToken(accesstoken)
+            .then((data)=>{
+                if(data.rowCount <= 0){
+                    reject({
+                        result: "Error",
+                        message: "Invalid Token"
+                    })
+                }
+            })
+            .then(()=>{
+                try {
+                    return jwt.verify(accesstoken, process.env.JWT_WORD)
+                }
+                catch{
+                    reject({
+                        result: "Error",
+                        message: "Token Expired"
+                    })
+                }
+            })
+            .then((data)=>{
+                if(data.userlevel > accesslevel){
+                    reject({
+                        result: "Error",
+                        message: "No Permission"
+                    })
+                }
+                return data
+            })
+            .then((data)=>{
+                resolve(data)
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
+
 }
 
 class User{
@@ -475,17 +515,35 @@ class User{
         })
     }
 
-    // static Auth = (level, accesstoken)=>{
-    //     return new Promise((resolve, reject)=>{
-    //         UserAPI.GetTokenByAccesssToken(accesstoken)
-    //         .then((data)=>{
-    //             resolve(data)
-    //         })
-    //         .catch((err)=>{
-    //             reject(err)
-    //         })
-    //     })
-    // }
+    static AdminAuth = (req, res, next ) =>{
+        staticFunction.Auth(1, req.header('Authorization').replace('Bearer ',''))
+        .then((data)=>{
+            req.mwUsername = data.username
+            req.mwUserlevel = data.userlevel
+            req.mwId = data.id
+        })
+        .then(()=>{
+            next()
+        })
+        .catch((err)=>{
+            res.json(err)
+        })
+    }
+    
+    static UserAuth = (req, res, next ) =>{
+        staticFunction.Auth(2, req.header('Authorization').replace('Bearer ',''))
+        .then((data)=>{
+            req.mwUsername = data.username
+            req.mwUserlevel = data.userlevel
+            req.mwId = data.id
+        })
+        .then(()=>{
+            next()
+        })
+        .catch((err)=>{
+            res.json(err)
+        })
+    }
 }
 
 

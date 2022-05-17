@@ -1,10 +1,10 @@
 const {Router} = require('express');
 const res = require('express/lib/response');
-const UserAPI = require('./userController').UserAPI
+const {UserAPI, User} = require('./userController')
 const UserApiRouter = new Router();
 
 
-UserApiRouter.get('/', (req, res)=>{
+UserApiRouter.get('/', User.AdminAuth, (req, res)=>{
     UserAPI.GetUser()
     .then((data)=>{
         res.json(data)
@@ -14,20 +14,18 @@ UserApiRouter.get('/', (req, res)=>{
     });
 });
 
-UserApiRouter.get('/id/:id', (req, res)=>{
+UserApiRouter.get('/id/:id', User.UserAuth, (req, res)=>{
     const id = req.params.id;
     UserAPI.GetUserById(id)
     .then((data)=>{
-        res.json(data)
+        if(req.mwId != id && req.mwUserlevel != 1){
+            res.json({
+                result: "Error",
+                message: "No Permission"
+            })
+        }
+        return data
     })
-    .catch((err)=>{
-        res.json(err)
-    });
-});
-
-UserApiRouter.get('/name/:name', (req, res)=>{
-    const name = req.params.name;
-    UserAPI.GetUserByName(name)
     .then((data)=>{
         res.json(data)
     })
@@ -36,7 +34,27 @@ UserApiRouter.get('/name/:name', (req, res)=>{
     });
 });
 
-UserApiRouter.get('/level/:level', (req, res)=>{
+UserApiRouter.get('/name/:name', User.UserAuth, (req, res)=>{
+    const name = req.params.name;
+    UserAPI.GetUserByName(name)
+    .then((data)=>{
+        if(req.mwUsername != name && req.mwUserlevel != 1){
+            res.json({
+                result: "Error",
+                message: "No Permission"
+            })
+        }
+        return data
+    })
+    .then((data)=>{
+        res.json(data)
+    })
+    .catch((err)=>{
+        res.json(err)
+    });
+});
+
+UserApiRouter.get('/level/:level', User.AdminAuth, (req, res)=>{
     const level = req.params.level;
     UserAPI.GetUserByLevel(level)
     .then((data)=>{
@@ -47,7 +65,7 @@ UserApiRouter.get('/level/:level', (req, res)=>{
     });
 });
 
-UserApiRouter.post('/', (req,res)=>{
+UserApiRouter.post('/', User.AdminAuth, (req,res)=>{
     const jsonBody = req.body;
     UserAPI.CreateUser(jsonBody)
     .then((data)=>{
@@ -58,10 +76,19 @@ UserApiRouter.post('/', (req,res)=>{
     })
 })
 
-UserApiRouter.put('/id/:id', (req, res)=>{
+UserApiRouter.put('/id/:id', User.UserAuth, (req, res)=>{
     const id = req.params.id;
     const jsonBody = req.body;
     UserAPI.UpdateUserById(id, jsonBody)
+    .then((data)=>{
+        if(req.mwId != id && req.mwUserlevel != 1){
+            res.json({
+                result: "Error",
+                message: "No Permission"
+            })
+        }
+        return data
+    })
     .then((data)=>{
         res.json(data)
     })
@@ -70,7 +97,28 @@ UserApiRouter.put('/id/:id', (req, res)=>{
     })
 })
 
-UserApiRouter.delete('/id/:id', (req, res)=>{
+UserApiRouter.put('/name/:name', User.UserAuth, (req, res)=>{
+    const name = req.params.name;
+    const jsonBody = req.body;
+    UserAPI.UpdateUserByName(name, jsonBody)
+    .then((data)=>{
+        if(req.mwUsername != name && req.mwUserlevel != 1){
+            res.json({
+                result: "Error",
+                message: "No Permission"
+            })
+        }
+        return data
+    })
+    .then((data)=>{
+        res.json(data)
+    })
+    .catch((err)=>{
+        res.json(err)
+    })
+})
+
+UserApiRouter.delete('/id/:id', User.AdminAuth, (req, res)=>{
     const id = req.params.id;
     UserAPI.DeleteUserById(id)
     .then((data)=>{
@@ -81,7 +129,7 @@ UserApiRouter.delete('/id/:id', (req, res)=>{
     })
 })
 
-UserApiRouter.delete('/name/:name', (req, res)=>{
+UserApiRouter.delete('/name/:name', User.AdminAuth, (req, res)=>{
     const name = req.params.name;
     UserAPI.DeleteUserByName(name)
     .then((data)=>{
