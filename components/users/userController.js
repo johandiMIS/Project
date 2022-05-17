@@ -191,8 +191,8 @@ class UserAPI{
     }
 
     static DeleteTokenByUsername = (username)=>{
-        return new Promise(()=>{
-            pool.query(`delete from users where username = '${username}'`)
+        return new Promise((resolve, reject)=>{
+            pool.query(`delete from tokens where username = '${username}'`)
             .then(()=>{
                 resolve({message:"Success"})
             })
@@ -203,8 +203,8 @@ class UserAPI{
     }
 
     static DeleteTokenByAccessToken = (accesstoken)=>{
-        return new Promise(()=>{
-            pool.query(`delete from users where accesstoken = '${accesstoken}'`)
+        return new Promise((resolve, reject)=>{
+            pool.query(`delete from tokens where accesstoken = '${accesstoken}'`)
             .then(()=>{
                 resolve({message:"Success"})
             })

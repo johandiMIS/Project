@@ -44,7 +44,6 @@ UserRouter.post('/generateaccesstoken', (req, res)=>{
 })
 
 UserRouter.get('/logout', User.UserAuth, (req, res)=>{
-
     User.LogOut(req.header('Authorization').replace('Bearer ',''))
     .then((data)=>{
         res.json(data)
