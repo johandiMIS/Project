@@ -422,7 +422,7 @@ class User{
             })
             .then((accesstoken)=>{
                 this.accesstoken = accesstoken
-                staticFunction.CreateToken(this.username, this.refreshtoken, this.accesstoken)
+                UserAPI.CreateToken(this.username, this.refreshtoken, this.accesstoken)
                 .then(()=>{
                     resolve([`${this.refreshtoken}`,`${this.accesstoken}`])
                 })
@@ -475,7 +475,17 @@ class User{
         })
     }
 
-    // static Auth
+    // static Auth = (level, accesstoken)=>{
+    //     return new Promise((resolve, reject)=>{
+    //         UserAPI.GetTokenByAccesssToken(accesstoken)
+    //         .then((data)=>{
+    //             resolve(data)
+    //         })
+    //         .catch((err)=>{
+    //             reject(err)
+    //         })
+    //     })
+    // }
 }
 
 
