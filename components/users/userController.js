@@ -494,7 +494,7 @@ class User{
 
     static LogOut = (accesstoken)=>{
         return new Promise((resolve, reject)=>{
-            staticFunction.DeleteTokenByAccessToken(accesstoken)
+            UserAPI.DeleteTokenByAccessToken(accesstoken)
             .then((data)=>{
                 resolve(data)
             })
@@ -506,7 +506,7 @@ class User{
 
     static LogOutAll = (username)=>{
         return new Promise((resolve, reject)=>{
-            staticFunction.DeleteTokenByUsername(username)
+            UserAPI.DeleteTokenByUsername(username)
             .then((data)=>{
                 resolve(data)
             })
