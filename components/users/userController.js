@@ -202,9 +202,9 @@ class UserAPI{
         })
     }
 
-    static DeleteTokenByRefreshToken = (refreshtoken)=>{
+    static DeleteTokenByAccessToken = (accesstoken)=>{
         return new Promise(()=>{
-            pool.query(`delete from users where refreshtoken = '${refreshtoken}'`)
+            pool.query(`delete from users where accesstoken = '${accesstoken}'`)
             .then(()=>{
                 resolve({message:"Success"})
             })
@@ -492,9 +492,9 @@ class User{
         })
     }
 
-    static LogOut = (refreshtoken)=>{
+    static LogOut = (accesstoken)=>{
         return new Promise((resolve, reject)=>{
-            staticFunction.DeleteTokenByRefreshToken(refreshtoken)
+            staticFunction.DeleteTokenByAccessToken(accesstoken)
             .then((data)=>{
                 resolve(data)
             })
