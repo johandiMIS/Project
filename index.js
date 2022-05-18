@@ -1,9 +1,7 @@
 const express = require('express');
-const { send } = require('express/lib/response');
-// const UserApiRouter = require('./components/users/userAPI.js').UserApiRouter
-// const UserRouter = require('./components/users/userRoute.js').UserRouter
 
 const {UserRouter, UserApiRouter} = require('./components/users')
+const {SensorRouter} = require('./components/sensor')
 
 const app = express();
 app.use(express.json())
@@ -12,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use('/api/user/', UserApiRouter);
 app.use('/api/menu/', UserRouter);
+app.use('/api/sensor/', SensorRouter);
 
 app.get('/api/help', (req, res)=>{
     res.redirect('https://web.postman.co/workspace/0b344906-83e2-42c3-85da-811b112bb868/documentation/15162357-90b8cc1b-9ac1-4912-8183-64588e1ece63')

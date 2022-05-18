@@ -15,7 +15,7 @@ may 16th
 may 17th
  - token api
  - token auth, generate access token
- - logout
+ - logout, logout all
  
 
 1. Dengan NodeJS (atau Golang), agar saudara membuat Rest API CRUD User dan User Login.  

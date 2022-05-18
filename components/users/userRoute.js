@@ -1,5 +1,4 @@
 const {Router} = require('express');
-const { UserAPI } = require('./userController');
 const User = require('./userController').User
 const UserRouter = new Router();
 
