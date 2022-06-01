@@ -1,3 +1,4 @@
+const { json } = require("express/lib/response")
 const { pool } = require("../../tools/psql")
 
 class Notes{
@@ -35,6 +36,25 @@ class Notes{
             }
         })
         
+    }
+
+    static PostNotes= (jsonBody)=>{
+        const category = jsonBody.category;
+        const title = jsonBody.title;
+        const notes = jsonBody.notes;
+        const finish = jsonBody.finish
+        return new Promise((resolve, reject)=>{
+            pool.query( 
+                `insert into notes(category, title, notes, finish)
+                values('${category}', '${title}','${notes}',${finish})`
+            )
+            .then(()=>{
+                resolve({message:"Success"})
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
     }
 }
 

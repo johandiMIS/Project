@@ -22,6 +22,16 @@ NoteRouter.get('/notes/:category', (req, res)=>{
         res.json(err)
     })
 })
+NoteRouter.post('/',(req, res)=>{
+    const jsonBody = req.body
+    Notes.PostNotes(jsonBody)
+    .then((data)=>{
+        res.json(data)
+    })
+    .catch((err)=>{
+        res.json(err)
+    })
+} )
 module.exports={
     NoteRouter
 }
