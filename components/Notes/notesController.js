@@ -71,6 +71,20 @@ class Notes{
             })
         })
     }
+
+    static UpdateFinish = (title, notes)=>{
+        return new Promise((resolve, reject)=>{
+            pool.query( 
+                `update notes set finish = not finish where title = '${title}' and notes = '${notes}'`
+            )
+            .then(()=>{
+                resolve({message:"Success"})
+            })
+            .catch((err)=>{
+                reject(err)
+            })
+        })
+    }
 }
 
 module.exports={

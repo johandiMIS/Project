@@ -3,6 +3,18 @@ const { param } = require('express/lib/request');
 const Notes = require('./notesController').Notes
 const NoteRouter = new Router();
 
+NoteRouter.put('/finish/title/:title/notes/:notes', (req, res)=>{
+    const title = req.params.title;
+    const notes = req.params.notes;
+    Notes.UpdateFinish(title, notes)
+    .then((data)=>{
+        res.json(data)
+    })
+    .catch((err)=>{
+        res.json(err)
+    })
+})
+
 NoteRouter.delete('/title/:title/notes/:notes', (req, res)=>{
     const title = req.params.title;
     const notes = req.params.notes;
