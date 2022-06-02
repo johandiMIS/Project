@@ -5,7 +5,7 @@ class Notes{
     
     static GetCategory = ()=>{
         return new Promise((resolve, reject)=>{
-            pool.query("select category from category")
+            pool.query("select category from category order by id")
             .then((data)=>{
                 resolve(data.rows)
             })
@@ -18,7 +18,7 @@ class Notes{
     static GetNotes= (category)=>{
         return new Promise((resolve, reject)=>{
             if(category === 'All'){
-                pool.query("select Title, Notes, Finish from notes")
+                pool.query("select Title, Notes, Finish from notes order by id")
                 .then((data)=>{
                     resolve(data.rows)
                 })
@@ -27,7 +27,7 @@ class Notes{
                 })
             }
             else{
-                pool.query(`select Title, Notes, Finish from notes where category = '${category}'`)
+                pool.query(`select Title, Notes, Finish from notes where category = '${category}' order by id`)
                 .then((data)=>{
                     resolve(data.rows)
                 })
