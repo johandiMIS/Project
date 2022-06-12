@@ -1,3 +1,4 @@
 module.exports = {
-    io : require('./socket.js')
+    init : require('./socket.js').init,
+    get: require('./socket.js').get
 }

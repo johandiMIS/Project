@@ -7,13 +7,7 @@ app.use(cors({
     origin:"http://localhost:3001"
 }));
 const server = http.createServer(app);
-const io = require('socket.io')(server, {
-    cors:{
-        origin: "*",
-        methods: ["GET", "POST"],
-    }
-})
-
+const io = require('./tools/Socketio').init(server)
 
 const {UserRouter, UserApiRouter} = require('./components/users');
 const {SensorRouter} = require('./components/sensor');
