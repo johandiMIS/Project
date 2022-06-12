@@ -1,15 +1,33 @@
 const express = require('express');
-var cors = require('cors')
-const {UserRouter, UserApiRouter} = require('./components/users')
-const {SensorRouter} = require('./components/sensor')
-const {NoteRouter} = require('./components/Notes')
-
-
 const app = express();
-app.use(express.json())
-app.use(cors())
-const PORT = process.env.PORT || 3000;
+const http = require('http');
+const cors = require('cors');
+app.use(express.json());
+app.use(cors({
+    origin:"http://localhost:3001"
+}));
+const server = http.createServer(app);
+const io = require('socket.io')(server, {
+    cors:{
+        origin: "*",
+        methods: ["GET", "POST"],
+    }
+})
 
+
+const {UserRouter, UserApiRouter} = require('./components/users');
+const {SensorRouter} = require('./components/sensor');
+const {NoteRouter} = require('./components/Notes');
+
+const PORT = process.env.PORT || 3001;
+
+io.on('connection', (socket)=>{
+    socket.on('data', ()=>{
+        io.emit('broadcast')
+        console.log('broadcasted')
+    })
+    console.log(socket.id)
+})
 
 app.use('/api/user/', UserApiRouter);
 app.use('/api/menu/', UserRouter);
@@ -33,6 +51,6 @@ app.delete('/*', (req, res) => {
     res.send(`Welcome to API. Visit https://safe-taiga-38670.herokuapp.com/api/help for API documentation.`)
 })
 
-app.listen(PORT, ()=>{
+server.listen(PORT, ()=>{
     console.log(`Server Start on Port ${PORT}`);
 });
