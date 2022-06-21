@@ -1,5 +1,5 @@
 const { pool } = require("../../tools/psql")
-
+const io = require('./../../tools/Socketio').get()
 class DataPoint{
     constructor(dataKey, dataValue){
         this.dataKey = dataKey
@@ -16,12 +16,10 @@ class Sensor{
 
             try{
                 var result = ""
-    
                 result += `credential = ${credential}\n`
                 for (var key in dataJson)
                 {
-                    var value = dataJson[`${key}`]
-                    // result += `${key} = ${value}\n`    
+                    var value = dataJson[`${key}`] 
                     arrData.push(new DataPoint(`${key}`,`${value}`))
                 }
                 resolve(arrData)
@@ -56,6 +54,9 @@ class Sensor{
             })
             .then((data)=>{
                 pool.query(data)
+            })
+            .then(()=>{
+                io.emit('data');
             })
             .then(()=>{
                 resolve({messagge:`Success`})

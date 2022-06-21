@@ -4,7 +4,8 @@ const http = require('http');
 const cors = require('cors');
 app.use(express.json());
 app.use(cors({
-    origin:"http://localhost:3001"
+    origin:"https://safe-taiga-38670.herokuapp.com"
+    // origin:"http://localhost:3001"
 }));
 const server = http.createServer(app);
 const io = require('./tools/Socketio').init(server)
@@ -15,13 +16,15 @@ const {NoteRouter} = require('./components/Notes');
 
 const PORT = process.env.PORT || 3001;
 
-io.on('connection', (socket)=>{
-    socket.on('data', ()=>{
-        io.emit('broadcast')
-        console.log('broadcasted')
-    })
-    console.log(socket.id)
-})
+// io.on('connection', (socket)=>{
+//     socket.on('data', ()=>{
+//         io.emit('broadcast')
+//         console.log('broadcasted')
+//     })
+//     console.log(socket.id)
+// })
+
+// io.emit('data')
 
 app.use('/api/user/', UserApiRouter);
 app.use('/api/menu/', UserRouter);
