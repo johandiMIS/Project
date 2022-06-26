@@ -1,7 +1,12 @@
 const res = require("express/lib/response")
 const { pool } = require("../../tools/psql")
 const io = require('./../../tools/Socketio').get()
-
+class DataPoint{
+    constructor(dataKey, dataValue){
+        this.dataKey = dataKey
+        this.dataValue = dataValue
+    }
+}
 class Sensor{
     static SensorParse = (SensorJson)=>{
         return new Promise((resolve, reject)=>{
