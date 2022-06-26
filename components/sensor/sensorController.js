@@ -1,11 +1,6 @@
+const res = require("express/lib/response")
 const { pool } = require("../../tools/psql")
 const io = require('./../../tools/Socketio').get()
-class DataPoint{
-    constructor(dataKey, dataValue){
-        this.dataKey = dataKey
-        this.dataValue = dataValue
-    }
-}
 
 class Sensor{
     static SensorParse = (SensorJson)=>{
@@ -15,7 +10,7 @@ class Sensor{
             const dataJson = SensorJson.data
 
             try{
-                var result = ""
+                var result = "";
                 result += `credential = ${credential}\n`
                 for (var key in dataJson)
                 {
@@ -65,6 +60,34 @@ class Sensor{
                 reject(err)
             })
         })
+    }
+
+    static GetSensorByCredential = (credential)=>{
+        const arrData=[];
+        return new Promise((resolve, reject)=>{
+            pool.query(`select * from sensors where credential = '${credential}'`)
+            .then((data)=>{
+                if(data.rowCount <= 0) throw new Error({messagge:`Data not found`})
+                return data.rows
+            }) 
+            .then((datas)=>{
+
+                datas.forEach((data)=>{ 
+                    arrData.push({sensorName:data.sensorname, sensorValue : data.sensorvalue});
+                })
+
+                return {
+                    credential : credential,
+                    data : arrData
+                }
+            })
+            .then((data)=>{
+                resolve(data)
+            })
+            .catch((err)=>{
+                reject(err)
+            });
+        });
     }
 }
 

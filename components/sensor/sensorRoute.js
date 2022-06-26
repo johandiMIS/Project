@@ -13,7 +13,16 @@ SensorRouter.post('/insert', (req, res)=>{
     })
 })
 
-
+SensorRouter.get('/credential/:credential', (req, res)=>{
+    const credential = req.params.credential;
+    Sensor.GetSensorByCredential(credential)
+    .then((data)=>{
+        res.json(data)
+    })
+    .catch((err)=>{
+        res.json(err)
+    })
+});
 
 
 module.exports={
