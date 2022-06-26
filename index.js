@@ -4,8 +4,9 @@ const http = require('http');
 const cors = require('cors');
 app.use(express.json());
 app.use(cors({
-    origin:"https://safe-taiga-38670.herokuapp.com"
+    // origin:"https://safe-taiga-38670.herokuapp.com"
     // origin:"http://localhost:3001"
+    origin:"*"
 }));
 const server = http.createServer(app);
 const io = require('./tools/Socketio').init(server)
